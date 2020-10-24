@@ -76,6 +76,7 @@ const NPC_FILES = [
   'Tribal Warrior',
   'Veteran',
 ];
+
 NPC_FILES.forEach((file) => {
   const fileName = `${file}.md`;
   const oldLocation = path.join(__dirname, OUT_DIR, fileName);
@@ -94,168 +95,56 @@ const npcFileList = NPC_FILES.map((file) => `- [[${file}]]`).join('\n');
 const npcFileContent = `#NPCs\n\n${npcFileList}`;
 fs.writeFileSync(path.join(__dirname, OUT_DIR, 'NPCs.md'), npcFileContent);
 
-// Fix up and move spell files into their directory
-glob(`./${OUT_DIR}/Spells (*.md`, (err, files) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-
-  indexedFiles = [];
-  clearFile();
-  files.forEach((file) => {
-    const fileContent = fs.readFileSync(file, 'utf8');
-    const lines = fileContent.split('\n');
-
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-
-      if (line.indexOf('#### ') === 0) {
-        workingFileContent += '\n[[Spells]]';
-        writeCurrentFile('spells/');
-        clearFile();
-        if (line.indexOf(': ') !== -1) {
-          [, workingFileName] = line.split(': ');
-        } else {
-          workingFileName = line.replace('#### ', '');
-        }
-      } else {
-        workingFileContent += `${line}\n`;
-      }
+function breakDownAlphebetizedFiles(title, targetDir, titleBreak) {
+  glob(`./${OUT_DIR}/${title} (*.md`, (err, files) => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
     }
 
-    workingFileContent += '\n[[Spells]]';
-    writeCurrentFile('spells/');
+    const backlink = `[[${title}]]`;
 
-    fs.unlinkSync(file);
-  });
+    indexedFiles = [];
+    clearFile();
+    files.forEach((file) => {
+      const fileContent = fs.readFileSync(file, 'utf8');
+      const lines = fileContent.split('\n');
 
-  let indexContent = '# Spells\n';
-  indexContent += indexedFiles.map((indexedFile) => `- [[${indexedFile}]]`).join('\n');
-  fs.writeFileSync(`./${OUT_DIR}/Spells.md`, indexContent, 'utf8');
-});
+      for (let i = 0; i < lines.length; i += 1) {
+        const line = lines[i];
 
-// Fix up and move creautre files into their directory
-glob(`./${OUT_DIR}/Creatures (*.md`, (err, files) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-
-  indexedFiles = [];
-  clearFile();
-  files.forEach((file) => {
-    const fileContent = fs.readFileSync(file, 'utf8');
-    const lines = fileContent.split('\n');
-
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-
-      if (line.indexOf('## ') === 0) {
-        workingFileContent += '\n[[Creatures]]';
-        writeCurrentFile('creatures/');
-        clearFile();
-        if (line.indexOf(': ') !== -1) {
-          [, workingFileName] = line.split(': ');
-        } else {
-          workingFileName = line.replace('## ', '');
+        if (line.indexOf(`${titleBreak} `) === 0) {
+          workingFileContent += `\n${backlink}`;
+          writeCurrentFile(`${targetDir}/`);
+          clearFile();
+          if (line.indexOf(': ') !== -1) {
+            [, workingFileName] = line.split(': ');
+          } else {
+            workingFileName = line.replace(`${titleBreak} `, '');
+          }
+        } else if (line.indexOf('# ') === -1) {
+          workingFileContent += `${line}\n`;
         }
-      } else {
-        workingFileContent += `${line}\n`;
       }
-    }
 
-    workingFileContent += '\n[[Creatures]]';
-    writeCurrentFile('creatures/');
-
-    fs.unlinkSync(file);
-  });
-
-  let indexContent = '# Creatures\n';
-  indexContent += indexedFiles.map((indexedFile) => `- [[${indexedFile}]]`).join('\n');
-  fs.writeFileSync(`./${OUT_DIR}/Creatures.md`, indexContent, 'utf8');
-});
-
-// Fix up and move monster files into their directory
-glob(`./${OUT_DIR}/Monsters (*.md`, (err, files) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-
-  indexedFiles = [];
-  clearFile();
-  files.forEach((file) => {
-    const fileContent = fs.readFileSync(file, 'utf8');
-    const lines = fileContent.split('\n');
-
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-
-      if (line.indexOf('## ') === 0) {
-        workingFileContent += '\n[[Monsters]]';
-        writeCurrentFile('monsters/');
-        clearFile();
-        if (line.indexOf(': ') !== -1) {
-          [, workingFileName] = line.split(': ');
-        } else {
-          workingFileName = line.replace('## ', '');
-        }
-      } else if (line.indexOf('# ') !== 0) {
-        workingFileContent += `${line}\n`;
+      if (workingFileContent.indexOf(backlink) === -1) {
+        workingFileContent += `\n${backlink}`;
       }
-    }
+      writeCurrentFile(`${targetDir}/`);
 
-    workingFileContent += '\n[[Monsters]]';
-    writeCurrentFile('monsters/');
+      fs.unlinkSync(file);
+    });
 
-    fs.unlinkSync(file);
+    let indexContent = `# ${title}\n`;
+    indexContent += indexedFiles.map((indexedFile) => `- [[${indexedFile}]]`).join('\n');
+    fs.writeFileSync(`./${OUT_DIR}/${title}.md`, indexContent, 'utf8');
   });
+}
 
-  let indexContent = '# Monsters\n';
-  indexContent += indexedFiles.map((indexedFile) => `- [[${indexedFile}]]`).join('\n');
-  fs.writeFileSync(`./${OUT_DIR}/Monsters.md`, indexContent, 'utf8');
-});
-
-// Fix up and move item files into their directory
-glob(`./${OUT_DIR}/Magic Items (*.md`, (err, files) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-
-  indexedFiles = [];
-  clearFile();
-  files.forEach((file) => {
-    const fileContent = fs.readFileSync(file, 'utf8');
-    const lines = fileContent.split('\n');
-
-    for (let i = 0; i < lines.length; i += 1) {
-      const line = lines[i];
-
-      if (line.indexOf('### ') === 0) {
-        workingFileContent += '\n[[Magic Items]]';
-        writeCurrentFile('items/');
-        clearFile();
-        if (line.indexOf(': ') !== -1) {
-          [, workingFileName] = line.split(': ');
-        } else {
-          workingFileName = line.replace('### ', '');
-        }
-      } else {
-        workingFileContent += `${line}\n`;
-      }
-    }
-
-    workingFileContent += '\n[[Magic Items]]';
-    writeCurrentFile('items/');
-
-    fs.unlinkSync(file);
-  });
-  let indexContent = '# Magic Items\n';
-  indexContent += indexedFiles.map((indexedFile) => `- [[${indexedFile}]]`).join('\n');
-  fs.writeFileSync(`./${OUT_DIR}/Magic Items.md`, indexContent, 'utf8');
-});
+breakDownAlphebetizedFiles('Spells', 'spells', '####');
+breakDownAlphebetizedFiles('Creatures', 'creatures', '##');
+breakDownAlphebetizedFiles('Monsters', 'monsters', '##');
+breakDownAlphebetizedFiles('Magic Items', 'items', '###');
 
 // Remove some unused files
 fs.unlinkSync(path.join(__dirname, OUT_DIR, 'Miscellaneous Creatures\'.md'));
