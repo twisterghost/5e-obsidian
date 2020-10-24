@@ -10,10 +10,21 @@ const inputLines = input.split('\n');
 let workingFileName = '';
 let workingFileContent = '';
 let indexedFiles = [];
+let seenDruidClass = false;
 
 function writeCurrentFile(prefix = '') {
   if (workingFileName.trim() !== '' && workingFileContent.trim() !== '' && workingFileName !== 'Licensing') {
-    const fixedName = workingFileName.replace('/', ' slash ').replace("'", '');
+    let fixedName = workingFileName.replace('/', ' slash ').replace("'", '');
+
+    // There is a Druid class and Druid NPC type, differentiate them
+    if (fixedName === 'Druid') {
+      if (seenDruidClass) {
+        fixedName = 'Druid (NPC)';
+      } else {
+        seenDruidClass = true;
+      }
+    }
+
     fs.writeFileSync(`./${OUT_DIR}/${prefix}${fixedName}.md`, `# ${workingFileName}\n${workingFileContent}`, 'utf8');
     indexedFiles.push(fixedName);
   }
@@ -63,7 +74,7 @@ const NPC_FILES = [
   'Commoner',
   'Cultist',
   'Cult Fanatic',
-  'Druid',
+  'Druid (NPC)',
   'Gladiator',
   'Guard',
   'Knight',
