@@ -1,14 +1,15 @@
 {
   "name": "dnd-obsidian",
   "version": "1.0.0",
-  "description": "",
+  "description": "A script to create an Obsidian.md compliant D&D 5e reference folder",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "clean": "rm -rf ./out"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "glob": "^7.1.6"
   }
