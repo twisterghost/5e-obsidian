@@ -27,7 +27,7 @@ $ git clone https://github.com/twisterghost/5e-obsidian.git
 Then, install dependencies and run:
 
 ```shell
-$ cd 5e-obisidian
+$ cd 5e-obsidian
 $ npm install
 $ npm start
 ```
