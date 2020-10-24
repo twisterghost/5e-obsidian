@@ -4,6 +4,10 @@ A script to break down the excellent compiled
 [D&D SRD Remastered](https://github.com/Umbyology/OGL-SRD5) into a workable
 reference directory for use in [Obsidian](https://obsidian.md).
 
+There's still a lot of improvements that could be made to make this more
+accurate and complete, but in practice, it has been enough to get moving with
+D&D in Obsidian.
+
 ## Get the files
 
 You probably just want the end result! Head to the
