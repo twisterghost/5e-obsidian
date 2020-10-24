@@ -78,10 +78,21 @@ const NPC_FILES = [
 ];
 NPC_FILES.forEach((file) => {
   const fileName = `${file}.md`;
-  const oldLocation = path.join(__dirname, 'reference', fileName);
-  const newLocation = path.join(__dirname, 'reference', 'npcs', fileName);
+  const oldLocation = path.join(__dirname, OUT_DIR, fileName);
+  const newLocation = path.join(__dirname, OUT_DIR, 'npcs', fileName);
   fs.renameSync(oldLocation, newLocation);
+
+  // Mark up the file with a backlink to NPCs.md
+  const fileContent = fs.readFileSync(newLocation, 'utf8');
+
+  const updatedContent = `${fileContent}\n[[NPCs]]`;
+  fs.writeFileSync(newLocation, updatedContent, 'utf8');
 });
+
+// Write NPC.md
+const npcFileList = NPC_FILES.map((file) => `- [[${file}]]`).join('\n');
+const npcFileContent = `#NPCs\n\n${npcFileList}`;
+fs.writeFileSync(path.join(__dirname, OUT_DIR, 'NPCs.md'), npcFileContent);
 
 // Fix up and move spell files into their directory
 glob(`./${OUT_DIR}/Spells (*.md`, (err, files) => {
@@ -182,7 +193,7 @@ glob(`./${OUT_DIR}/Monsters (*.md`, (err, files) => {
       const line = lines[i];
 
       if (line.indexOf('## ') === 0) {
-        workingFileContent += '\n#[[Monsters]]';
+        workingFileContent += '\n[[Monsters]]';
         writeCurrentFile('monsters/');
         clearFile();
         if (line.indexOf(': ') !== -1) {
@@ -190,7 +201,7 @@ glob(`./${OUT_DIR}/Monsters (*.md`, (err, files) => {
         } else {
           workingFileName = line.replace('## ', '');
         }
-      } else {
+      } else if (line.indexOf('# ') !== 0) {
         workingFileContent += `${line}\n`;
       }
     }
@@ -245,3 +256,7 @@ glob(`./${OUT_DIR}/Magic Items (*.md`, (err, files) => {
   indexContent += indexedFiles.map((indexedFile) => `- [[${indexedFile}]]`).join('\n');
   fs.writeFileSync(`./${OUT_DIR}/Magic Items.md`, indexContent, 'utf8');
 });
+
+// Remove some unused files
+fs.unlinkSync(path.join(__dirname, OUT_DIR, 'Miscellaneous Creatures\'.md'));
+fs.unlinkSync(path.join(__dirname, OUT_DIR, 'Non-Player Characters\'.md'));
