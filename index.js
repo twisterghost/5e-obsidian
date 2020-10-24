@@ -3,7 +3,7 @@ const path = require('path');
 const glob = require('glob');
 
 const OUT_DIR = 'reference';
-const input = fs.readFileSync('./src.md', 'utf8');
+const input = fs.readFileSync('./5e-srd-compiled-0-4-1.md', 'utf8');
 
 const inputLines = input.split('\n');
 
@@ -30,6 +30,7 @@ fs.mkdirSync(path.join(__dirname, OUT_DIR, 'spells'), { recursive: true });
 fs.mkdirSync(path.join(__dirname, OUT_DIR, 'creatures'), { recursive: true });
 fs.mkdirSync(path.join(__dirname, OUT_DIR, 'items'), { recursive: true });
 fs.mkdirSync(path.join(__dirname, OUT_DIR, 'monsters'), { recursive: true });
+fs.mkdirSync(path.join(__dirname, OUT_DIR, 'npcs'), { recursive: true });
 
 // Break out each top level header into its own file
 for (let i = 0; i < inputLines.length; i += 1) {
@@ -50,6 +51,37 @@ for (let i = 0; i < inputLines.length; i += 1) {
 
 // Write the last file left
 writeCurrentFile();
+
+// There's a handful of files that categorize into the "NPCs" dir
+const NPC_FILES = [
+  'Acolyte',
+  'Archmage',
+  'Assassin',
+  'Bandit',
+  'Bandit Captain',
+  'Berserker',
+  'Commoner',
+  'Cultist',
+  'Cult Fanatic',
+  'Druid',
+  'Gladiator',
+  'Guard',
+  'Knight',
+  'Mage',
+  'Noble',
+  'Priest',
+  'Scout',
+  'Spy',
+  'Thug',
+  'Tribal Warrior',
+  'Veteran',
+];
+NPC_FILES.forEach((file) => {
+  const fileName = `${file}.md`;
+  const oldLocation = path.join(__dirname, 'reference', fileName);
+  const newLocation = path.join(__dirname, 'reference', 'npcs', fileName);
+  fs.renameSync(oldLocation, newLocation);
+});
 
 // Fix up and move spell files into their directory
 glob(`./${OUT_DIR}/Spells (*.md`, (err, files) => {
