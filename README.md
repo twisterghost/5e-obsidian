@@ -1,5 +1,7 @@
 # D&D Obsidian Reference
 
+**>> [Download the files on releases page](https://github.com/twisterghost/5e-obsidian/releases) <<**
+
 A script to break down the excellent compiled
 [D&D SRD Remastered](https://github.com/Umbyology/OGL-SRD5) into a workable
 reference directory for use in [Obsidian](https://obsidian.md).
